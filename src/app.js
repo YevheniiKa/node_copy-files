@@ -2,37 +2,46 @@
 'use strict';
 
 const fs = require('fs');
-const path = process.argv[2];
-const copyPath = process.argv[3];
+const source = process.argv[2];
+const dest = process.argv[3];
 
-if (!path || !copyPath) {
-  console.error('Error: Please provide source and destination paths');
+if (!source) {
+  console.error('Please provide correct source path');
+  process.exit(0);
 }
 
-if (path === copyPath) {
-  console.error('Error: Source and destination paths are the same');
+if (!dest) {
+  console.error('Please provide correct destination path');
+  process.exit(0);
+}
+
+if (source === dest) {
+  process.exit(0);
 }
 
 try {
-  const stats = fs.statSync(path);
+  const stats = fs.statSync(source);
 
   if (!stats.isFile()) {
-    console.error('Error: Source path is not a file');
+    console.error('Source path is not a file');
+    process.exit(0);
   }
 
-  if (fs.existsSync(copyPath)) {
-    const destStats = fs.statSync(copyPath);
+  if (fs.existsSync(dest)) {
+    const destStats = fs.statSync(dest);
 
     if (destStats.isDirectory()) {
-      console.error('Error: Destination path is a directory');
+      console.error('Destination path is a directory');
+      process.exit(0);
     }
   }
 
-  const data = fs.readFileSync(path);
+  const data = fs.readFileSync(source);
 
-  fs.writeFileSync(copyPath, data);
+  fs.writeFileSync(dest, data);
 
-  console.log(`File copied from "${path}" to "${copyPath}" successfully`);
+  console.log(`File copied from "${source}" to "${dest}" path successfully`);
 } catch (err) {
-  console.error(`Error: ${err}`);
+  console.error(err.message);
+  process.exit(0);
 }
